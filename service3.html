@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Workflow Automation & Custom Apps · Conacent</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --primary: #00419d;
+      --primary-dark: #002d6b;
+      --primary-light: #e9f0ff;
+      --gray-50: #f7faff;
+      --gray-100: #eef4ff;
+      --gray-200: #dfe9f7;
+      --gray-500: #64748b;
+      --gray-700: #334155;
+      --gray-900: #0f172a;
+      --white: #ffffff;
+      --shadow-sm: 0 8px 24px rgba(0, 65, 157, 0.08);
+      --shadow-md: 0 16px 40px rgba(0, 65, 157, 0.12);
+      --radius: 24px;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(180deg, #f8fbff 0%, #f3f8ff 100%);
+      color: var(--gray-900);
+      line-height: 1.7;
+    }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+    h1, h2, h3, h4 { font-weight: 700; letter-spacing: -0.02em; line-height: 1.2; }
+    h2 { font-size: clamp(2rem, 3vw, 2.65rem); margin-bottom: 0.65rem; }
+    p { color: var(--gray-700); }
+    .section { padding: 88px 0; position: relative; }
+    .section-light { background: var(--white); }
+    .section-gray { background: linear-gradient(180deg, var(--gray-50) 0%, #f1f6ff 100%); }
+    .section-accent { background: linear-gradient(135deg, var(--primary) 0%, #0a5edb 100%); color: white; }
+    .badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--primary-light); color: var(--primary);
+      font-weight: 600; font-size: 0.78rem; letter-spacing: 0.12em;
+      padding: 8px 16px; border-radius: 999px; margin-bottom: 14px; text-transform: uppercase;
+    }
+    .btn-primary, .btn-outline-light, .btn-outline-primary {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 13px 24px; border-radius: 999px; font-weight: 600;
+      text-decoration: none; transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+    }
+    .btn-primary { background: var(--primary); color: white; box-shadow: 0 10px 25px rgba(0,65,157,0.2); }
+    .btn-primary:hover { background: var(--primary-dark); transform: translateY(-2px); box-shadow: 0 14px 32px rgba(0,65,157,0.25); }
+    .btn-outline-light { color: white; border: 1px solid rgba(255,255,255,0.35); background: rgba(255,255,255,0.08); backdrop-filter: blur(6px); }
+    .btn-outline-light:hover { background: white; color: var(--primary); }
+    .btn-outline-primary { color: var(--primary); border: 1px solid rgba(0,65,157,0.2); background: white; }
+    .btn-outline-primary:hover { background: var(--primary); color: white; }
+    .text-center { text-align: center; }
+    .section-heading { max-width: 720px; margin-bottom: 24px; }
+    .section-heading p { color: var(--gray-500); font-size: 1.02rem; }
+
+    .navbar {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(255,255,255,0.9); backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(0,65,157,0.08);
+    }
+    .navbar .container {
+      display: flex; align-items: center; justify-content: space-between;
+      padding-top: 14px; padding-bottom: 14px;
+    }
+    .nav-logo img { height: 42px; width: auto; display: block; }
+    .nav-links {
+      display: flex; align-items: center; gap: 24px; list-style: none;
+    }
+    .nav-links a {
+      text-decoration: none; color: var(--gray-700); font-weight: 500; font-size: 0.95rem;
+      transition: color 0.2s ease;
+    }
+    .nav-links a:hover { color: var(--primary); }
+    .nav-cta {
+      background: var(--primary); color: white !important;
+      padding: 10px 18px; border-radius: 999px;
+    }
+    .nav-cta:hover { background: var(--primary-dark); color: white !important; }
+    .nav-toggle { display: none; border: 0; background: none; color: var(--primary); font-size: 1.5rem; cursor: pointer; }
+    .nav-item.dropdown { position: relative; }
+    .dropdown-toggle { display: inline-flex; align-items: center; gap: 6px; padding: 10px 14px; border: none; background: transparent; color: inherit; font: inherit; font-weight: 600; cursor: pointer; transition: color 0.2s ease; }
+    .dropdown-toggle .fas { transition: transform 0.2s ease; font-size: 0.82rem; }
+    .nav-item.dropdown:hover .dropdown-toggle .fas { transform: rotate(180deg); }
+    .dropdown-menu { position: absolute; top: calc(100% + 10px); left: 0; min-width: 220px; padding: 12px 0; border-radius: 20px; background: rgba(255,255,255,0.98); border: 1px solid rgba(15, 23, 42, 0.08); box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12); opacity: 0; visibility: hidden; transform: translateY(10px); transition: opacity 0.22s ease, transform 0.22s ease, visibility 0.22s; z-index: 20; }
+    .dropdown-menu.open, .nav-item.dropdown:hover .dropdown-menu { opacity: 1; visibility: visible; transform: translateY(0); }
+    .dropdown-menu li { list-style: none; }
+    .dropdown-menu a { display: block; padding: 10px 18px; color: #0f172a; text-decoration: none; font-size: 0.95rem; transition: background 0.2s ease; }
+    .dropdown-menu a:hover, .dropdown-menu a:focus { background: rgba(0, 65, 157, 0.08); }
+
+    .card-grid {
+      display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; margin-top: 28px;
+    }
+    .feature-card, .pillar-card {
+      background: white; border-radius: var(--radius); padding: 28px 24px;
+      border: 1px solid rgba(0,65,157,0.08); box-shadow: var(--shadow-sm);
+      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    }
+    .feature-card:hover, .pillar-card:hover {
+      transform: translateY(-4px); box-shadow: var(--shadow-md); border-color: rgba(0,65,157,0.2);
+    }
+    .feature-card i, .pillar-card i {
+      width: 48px; height: 48px; display: inline-flex; align-items: center; justify-content: center;
+      border-radius: 16px; background: var(--primary-light); color: var(--primary);
+      font-size: 1.2rem; margin-bottom: 16px;
+    }
+    .feature-card h4, .pillar-card h4 {
+      margin-bottom: 8px; font-size: 1.15rem; color: var(--gray-900);
+    }
+    .feature-card p, .pillar-card p {
+      color: var(--gray-500); font-size: 0.96rem;
+    }
+
+    .split-layout {
+      display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 32px; align-items: start;
+    }
+    .panel-surface {
+      background: linear-gradient(135deg, #ffffff 0%, #f8fbff 100%);
+      border: 1px solid rgba(0,65,157,0.08); border-radius: 28px; padding: 28px; box-shadow: var(--shadow-sm);
+    }
+    .list-grid {
+      display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 28px;
+      margin-top: 20px; list-style: none;
+    }
+    .list-grid li {
+      display: flex; gap: 10px; align-items: flex-start;
+      color: var(--gray-700); padding: 8px 0; border-bottom: 1px solid rgba(0,65,157,0.06);
+    }
+    .list-grid i { color: var(--primary); margin-top: 4px; }
+
+    .contact-form {
+      background: white; border-radius: var(--radius); padding: 36px 32px;
+      box-shadow: var(--shadow-md); border: 1px solid rgba(0,65,157,0.08);
+      max-width: 700px; margin: 0 auto;
+    }
+    .contact-form .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .contact-form .form-group { margin-bottom: 20px; }
+    .contact-form label { display: block; font-weight: 600; font-size: 0.9rem; margin-bottom: 6px; color: var(--gray-700); }
+    .contact-form input, .contact-form textarea {
+      width: 100%; padding: 12px 16px; border: 1px solid var(--gray-200);
+      border-radius: 16px; font-family: 'Inter', sans-serif; font-size: 0.95rem;
+      transition: border 0.2s; background: var(--gray-50);
+    }
+    .contact-form input:focus, .contact-form textarea:focus {
+      outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0,65,157,0.1);
+    }
+    .contact-form textarea { min-height: 120px; resize: vertical; }
+
+    .footer {
+      background: #071120; color: rgba(255,255,255,0.76); padding: 64px 0 28px;
+    }
+    .footer .container {
+      display: grid; grid-template-columns: 1.8fr 1fr 1fr 1fr; gap: 32px;
+    }
+    .footer-brand img { height: 42px; filter: brightness(0) invert(1); margin-bottom: 14px; }
+    .footer h5 { color: white; font-size: 1rem; margin-bottom: 12px; }
+    .footer ul { list-style: none; display: grid; gap: 8px; }
+    .footer a { color: rgba(255,255,255,0.68); text-decoration: none; font-size: 0.95rem; }
+    .footer a:hover { color: white; }
+    .footer-bottom {
+      border-top: 1px solid rgba(255,255,255,0.08); margin-top: 26px; padding-top: 18px;
+      grid-column: 1 / -1; text-align: center; font-size: 0.9rem; color: rgba(255,255,255,0.56);
+    }
+
+    @media (max-width: 1024px) {
+      .split-layout { grid-template-columns: 1fr; }
+      .card-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .footer .container { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none; flex-direction: column; align-items: flex-start;
+        width: 100%; padding: 14px 0 6px;
+      }
+      .nav-links.open { display: flex; }
+      .nav-toggle { display: block; }
+      .section { padding: 72px 0; }
+      .card-grid, .list-grid, .contact-form .form-row { grid-template-columns: 1fr; }
+      .footer .container { grid-template-columns: 1fr; }
+      .nav-item.dropdown {
+        width: 100%;
+      }
+      .dropdown-toggle {
+        width: 100%;
+        justify-content: space-between;
+      }
+      .dropdown-menu {
+        position: static;
+        transform: none;
+        box-shadow: none;
+        border: none;
+        background: transparent;
+        margin-top: 8px;
+      }
+      .dropdown-menu a {
+        padding-left: 30px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="container">
+      <a href="index.html" class="nav-logo"><img src="https://www.conacent.com/wp-content/uploads/2018/09/logo.jpg" alt="Conacent" /></a>
+      <button class="nav-toggle" id="navToggle"><i class="fas fa-bars"></i></button>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about-us.html">About Us</a></li>
+        <li class="nav-item dropdown">
+          <button class="dropdown-toggle" aria-expanded="false">Services <i class="fas fa-chevron-down"></i></button>
+          <ul class="dropdown-menu">
+            <li><a href="service1.html">ERP Modernization</a></li>
+            <li><a href="service2.html">Procurement Transformation</a></li>
+            <li><a href="service3.html">Workflow Automation</a></li>
+            <li><a href="service4.html">Integration & Infrastructure</a></li>
+            <li><a href="service5.html">Digital Experience</a></li>
+          </ul>
+        </li>
+        <li><a href="#contact" class="nav-cta">Reach Us</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <header style="background: linear-gradient(120deg, rgba(0,65,157,0.96) 0%, rgba(11,57,139,0.95) 48%, rgba(24,79,164,0.92) 100%); color: white; padding: 72px 0 96px; position: relative; overflow: hidden;">
+    <div style="position: absolute; inset:0; background: url('https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1600&q=80') center/cover; opacity: 0.10; mix-blend-mode: screen;"></div>
+    <div class="container" style="position: relative; z-index:1; display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 36px; align-items: center;">
+      <div>
+        <span class="badge" style="background: rgba(255,255,255,0.16); color: white; border: 1px solid rgba(255,255,255,0.22);">workflow automation</span>
+        <h1 style="font-size: clamp(2.3rem, 4.4vw, 3.9rem); margin: 10px 0 16px;">Modern enterprises require more than standardized systems.</h1>
+        <p style="color: rgba(255,255,255,0.86); font-size: 1.08rem; max-width: 700px;">They need intelligent workflows and purpose-built applications that connect people, processes, and technology.</p>
+        <div style="margin-top: 24px;">
+          <a href="#contact" class="btn-primary" style="background: white; color: var(--primary); box-shadow: 0 10px 25px rgba(0,0,0,0.15);">Automate Your Enterprise Operations <i class="fas fa-arrow-right"></i></a>
+        </div>
+      </div>
+      <div style="background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.18); padding: 24px; border-radius: 24px; backdrop-filter: blur(8px);">
+        <h4 style="font-size: 1.15rem; margin-bottom: 10px;">Intelligent automation</h4>
+        <ul style="list-style: none; display: grid; gap: 10px;">
+          <li style="display: flex; gap: 10px; color: rgba(255,255,255,0.88);"><i class="fas fa-check-circle" style="color: #8ad0ff; margin-top: 2px;"></i> Purpose-built custom applications</li>
+          <li style="display: flex; gap: 10px; color: rgba(255,255,255,0.88);"><i class="fas fa-check-circle" style="color: #8ad0ff; margin-top: 2px;"></i> End-to-end workflow automation</li>
+          <li style="display: flex; gap: 10px; color: rgba(255,255,255,0.88);"><i class="fas fa-check-circle" style="color: #8ad0ff; margin-top: 2px;"></i> HRMS & employee self-service</li>
+        </ul>
+      </div>
+    </div>
+  </header>
+
+  <!-- Section 2: Beyond ERP -->
+  <section class="section section-light">
+    <div class="container split-layout">
+      <div>
+        <span class="badge">beyond erp</span>
+        <h2>Enterprise Transformation Extends Beyond ERP</h2>
+        <p style="margin-top: 12px;">ERP platforms provide the operational backbone, but every enterprise has business processes unique to its industry, operating model, regulatory environment, and internal workflows.</p>
+        <p style="margin-top: 12px;">Approval cycles, employee requests, vendor interactions, customer-specific processes, operational tracking, document management, and compliance activities often extend beyond standard ERP capabilities.</p>
+        <p style="margin-top: 12px;">Conacent helps organizations bridge this gap through enterprise workflow automation and custom application development that complements existing ERP environments while creating connected operational ecosystems.</p>
+      </div>
+      <div class="panel-surface">
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+          <div style="display: flex; gap: 14px; align-items: flex-start; background: var(--gray-50); padding: 16px 18px; border-radius: 20px;">
+            <i class="fas fa-robot" style="font-size: 1.2rem; color: var(--primary);"></i>
+            <div><strong>Automate business processes</strong><p style="margin:0; font-size:0.9rem; color:var(--gray-500);">Reduce manual coordination & improve consistency</p></div>
+          </div>
+          <div style="display: flex; gap: 14px; align-items: flex-start; background: var(--gray-50); padding: 16px 18px; border-radius: 20px;">
+            <i class="fas fa-code" style="font-size: 1.2rem; color: var(--primary);"></i>
+            <div><strong>Custom enterprise applications</strong><p style="margin:0; font-size:0.9rem; color:var(--gray-500);">Built around your business, not software limitations</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 3: Framework (5 capabilities) -->
+  <section class="section section-gray" id="framework">
+    <div class="container">
+      <div class="section-heading">
+        <span class="badge">framework</span>
+        <h2>Our Enterprise Automation Framework</h2>
+        <p>Successful automation is about enabling people to work more efficiently through connected systems, standardized processes, and intelligent workflows.</p>
+      </div>
+      <div class="card-grid">
+        <div class="feature-card"><i class="fas fa-diagram-project"></i><h4>Enterprise Workflow Automation</h4><p>Automate business workflows across departments — from procurement approvals and finance requests to HR processes and operational workflows.</p></div>
+        <div class="feature-card"><i class="fas fa-laptop-code"></i><h4>Custom Enterprise Applications</h4><p>Develop secure, scalable, business-specific applications that extend ERP functionality while supporting unique operational processes.</p></div>
+        <div class="feature-card"><i class="fas fa-users"></i><h4>HRMS & Employee Self-Service</h4><p>Employee lifecycle management, payroll integration, self-service, leave management, approvals, and HR reporting integrated with enterprise systems.</p></div>
+        <div class="feature-card"><i class="fas fa-globe"></i><h4>Customer & Vendor Portals</h4><p>Secure portals for customers, suppliers, and partners that improve collaboration, information sharing, and workflow tracking.</p></div>
+        <div class="feature-card"><i class="fas fa-file-pen"></i><h4>Enterprise Process Digitization</h4><p>Replace paper-based processes, spreadsheets, email approvals, and fragmented workflows with integrated digital environments.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 4: Workflow Automation Across the Enterprise -->
+  <section class="section section-light" id="workflows">
+    <div class="container">
+      <div class="section-heading">
+        <span class="badge">workflows</span>
+        <h2>Workflow Automation Across the Enterprise</h2>
+        <p>Workflow automation creates value across multiple business functions by enabling information to move seamlessly between people, systems, and departments.</p>
+      </div>
+      <ul class="list-grid" style="grid-template-columns: repeat(3, minmax(0, 1fr));">
+        <li><i class="fas fa-check-circle"></i> Approval Workflow Automation</li>
+        <li><i class="fas fa-check-circle"></i> Employee Request Management</li>
+        <li><i class="fas fa-check-circle"></i> Procurement Workflows</li>
+        <li><i class="fas fa-check-circle"></i> Finance Process Automation</li>
+        <li><i class="fas fa-check-circle"></i> Document Management Workflows</li>
+        <li><i class="fas fa-check-circle"></i> HR Workflows</li>
+        <li><i class="fas fa-check-circle"></i> Vendor Approval Processes</li>
+        <li><i class="fas fa-check-circle"></i> Asset Management Workflows</li>
+        <li><i class="fas fa-check-circle"></i> Compliance Workflows</li>
+        <li><i class="fas fa-check-circle"></i> Notification & Escalation</li>
+        <li><i class="fas fa-check-circle"></i> Business Rule Automation</li>
+      </ul>
+      <p style="margin-top: 20px; color: var(--gray-500);">Rather than automating isolated tasks, we help organizations build connected workflows that improve collaboration across the enterprise.</p>
+    </div>
+  </section>
+
+  <!-- Section 5: Custom Enterprise Applications -->
+  <section class="section section-gray" id="custom-apps">
+    <div class="container split-layout">
+      <div>
+        <span class="badge">custom applications</span>
+        <h2>Custom Enterprise Applications Built Around Your Business</h2>
+        <p style="margin-top: 10px;">No two organizations operate in exactly the same way. While enterprise platforms provide standardized functionality, many organizations require specialized applications to support industry-specific operations, regulatory requirements, or internal workflows.</p>
+        <p style="margin-top: 10px;">Conacent develops custom enterprise applications that integrate seamlessly with existing ERP platforms while providing flexibility for future growth.</p>
+        <ul class="list-grid">
+          <li><i class="fas fa-check-circle"></i> Business Process Applications</li>
+          <li><i class="fas fa-check-circle"></i> Operational Dashboards</li>
+          <li><i class="fas fa-check-circle"></i> Customer Portals</li>
+          <li><i class="fas fa-check-circle"></i> Supplier Portals</li>
+          <li><i class="fas fa-check-circle"></i> Employee Self-Service</li>
+          <li><i class="fas fa-check-circle"></i> Project Management Applications</li>
+          <li><i class="fas fa-check-circle"></i> Mobile Enterprise Applications</li>
+          <li><i class="fas fa-check-circle"></i> Workflow Management Systems</li>
+          <li><i class="fas fa-check-circle"></i> Internal Business Portals</li>
+          <li><i class="fas fa-check-circle"></i> Industry-Specific Solutions</li>
+        </ul>
+      </div>
+      <div class="panel-surface">
+        <div style="background: var(--gray-50); padding: 20px; border-radius: 20px;">
+          <i class="fas fa-puzzle-piece" style="font-size: 1.8rem; color: var(--primary);"></i>
+          <h4 style="margin-top: 12px;">Designed for your business</h4>
+          <p>Every application is designed to improve operational efficiency while maintaining enterprise-grade security, scalability, and integration.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 6: Integration-Ready by Design -->
+  <section class="section section-light" id="integration">
+    <div class="container">
+      <div class="section-heading">
+        <span class="badge">integration</span>
+        <h2>Integration-Ready by Design</h2>
+        <p>Enterprise applications should never operate in isolation. Our workflow automation and custom applications are designed to integrate with Oracle ERP, Fusion, NetSuite, HR systems, procurement platforms, and analytics solutions.</p>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 12px;">
+        <div style="background: white; border-radius: var(--radius); padding: 20px; border: 1px solid rgba(0,65,157,0.08); box-shadow: var(--shadow-sm); text-align: center;">
+          <i class="fas fa-cloud" style="font-size: 1.6rem; color: var(--primary);"></i>
+          <p style="margin-top: 8px; font-weight: 600;">Oracle ERP Integration</p>
+        </div>
+        <div style="background: white; border-radius: var(--radius); padding: 20px; border: 1px solid rgba(0,65,157,0.08); box-shadow: var(--shadow-sm); text-align: center;">
+          <i class="fas fa-code" style="font-size: 1.6rem; color: var(--primary);"></i>
+          <p style="margin-top: 8px; font-weight: 600;">API Development</p>
+        </div>
+        <div style="background: white; border-radius: var(--radius); padding: 20px; border: 1px solid rgba(0,65,157,0.08); box-shadow: var(--shadow-sm); text-align: center;">
+          <i class="fas fa-plug" style="font-size: 1.6rem; color: var(--primary);"></i>
+          <p style="margin-top: 8px; font-weight: 600;">Third-Party System Integration</p>
+        </div>
+        <div style="background: white; border-radius: var(--radius); padding: 20px; border: 1px solid rgba(0,65,157,0.08); box-shadow: var(--shadow-sm); text-align: center;">
+          <i class="fas fa-database" style="font-size: 1.6rem; color: var(--primary);"></i>
+          <p style="margin-top: 8px; font-weight: 600;">Database Integration</p>
+        </div>
+        <div style="background: white; border-radius: var(--radius); padding: 20px; border: 1px solid rgba(0,65,157,0.08); box-shadow: var(--shadow-sm); text-align: center;">
+          <i class="fas fa-shield" style="font-size: 1.6rem; color: var(--primary);"></i>
+          <p style="margin-top: 8px; font-weight: 600;">Enterprise Authentication</p>
+        </div>
+        <div style="background: white; border-radius: var(--radius); padding: 20px; border: 1px solid rgba(0,65,157,0.08); box-shadow: var(--shadow-sm); text-align: center;">
+          <i class="fas fa-chart-line" style="font-size: 1.6rem; color: var(--primary);"></i>
+          <p style="margin-top: 8px; font-weight: 600;">Reporting & BI Integration</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 7: Business Outcomes -->
+  <section class="section section-gray">
+    <div class="container">
+      <div class="section-heading">
+        <span class="badge">outcomes</span>
+        <h2>Business Outcomes That Matter</h2>
+        <p>Enterprise workflow automation creates measurable improvements across business operations.</p>
+      </div>
+      <div class="card-grid">
+        <div class="feature-card"><i class="fas fa-bolt"></i><h4>Faster Process Execution</h4><p>Reduce approval times and improve operational responsiveness through intelligent workflow routing.</p></div>
+        <div class="feature-card"><i class="fas fa-eye"></i><h4>Greater Operational Visibility</h4><p>Track activities, approvals, requests, and business processes through centralized dashboards and reporting.</p></div>
+        <div class="feature-card"><i class="fas fa-hand-peace"></i><h4>Reduced Manual Effort</h4><p>Automate repetitive administrative activities while improving accuracy and consistency.</p></div>
+        <div class="feature-card"><i class="fas fa-user-check"></i><h4>Improved Employee Experience</h4><p>Enable employees through self-service capabilities, streamlined workflows, and intuitive applications.</p></div>
+        <div class="feature-card"><i class="fas fa-people-arrows"></i><h4>Better Cross-Functional Collaboration</h4><p>Connect departments, business units, suppliers, and leadership through standardized digital workflows.</p></div>
+        <div class="feature-card"><i class="fas fa-expand"></i><h4>Scalable Operations</h4><p>Support organizational growth without proportionally increasing administrative effort or complexity.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 8: Why Organizations Choose Conacent -->
+  <section class="section section-light">
+    <div class="container split-layout">
+      <div>
+        <span class="badge">why conacent</span>
+        <h2>Why Organizations Choose Conacent</h2>
+        <p style="margin-top: 10px;">Workflow automation delivers the greatest value when technology reflects the way an organization actually operates.</p>
+        <p style="margin-top: 10px;">Conacent combines enterprise consulting expertise with application development, workflow design, Oracle integration, and operational transformation experience to create solutions that fit business requirements rather than forcing organizations to adapt to software limitations.</p>
+        <ul class="list-grid">
+          <li><i class="fas fa-check-circle"></i> Business process consulting</li>
+          <li><i class="fas fa-check-circle"></i> Workflow automation expertise</li>
+          <li><i class="fas fa-check-circle"></i> Custom enterprise application development</li>
+          <li><i class="fas fa-check-circle"></i> Oracle ERP integration</li>
+          <li><i class="fas fa-check-circle"></i> HRMS implementation</li>
+          <li><i class="fas fa-check-circle"></i> Long-term optimization and managed support</li>
+        </ul>
+      </div>
+      <div class="panel-surface">
+        <div style="background: var(--gray-50); padding: 20px; border-radius: 20px;">
+          <i class="fas fa-bullseye" style="font-size: 1.8rem; color: var(--primary);"></i>
+          <h4 style="margin-top: 12px;">Connected operational ecosystems</h4>
+          <p>We focus on creating connected operational ecosystems that support sustainable business transformation.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 9: Build Connected Workflows + Form -->
+  <section class="section section-accent" id="contact">
+    <div class="container text-center">
+      <span class="badge" style="background: rgba(255,255,255,0.16); color: white; border: 1px solid rgba(255,255,255,0.22);">let's build</span>
+      <h2 style="font-size: clamp(2rem, 3vw, 2.6rem);">Build Connected Workflows That Scale With Your Business</h2>
+      <p style="color: rgba(255,255,255,0.85); max-width: 720px; margin: 14px auto 24px;">Whether you are automating business processes, developing custom enterprise applications, implementing HRMS solutions, digitizing operational workflows, or extending your Oracle ERP environment, Conacent helps organizations create intelligent, connected systems that improve efficiency, visibility, and long-term business performance.</p>
+    </div>
+    <div class="container" style="max-width: 780px;">
+      <div class="contact-form">
+        <form>
+          <div class="form-row">
+            <div class="form-group"><label>Full name</label><input type="text" placeholder="Your name" /></div>
+            <div class="form-group"><label>Email address</label><input type="email" placeholder="you@company.com" /></div>
+          </div>
+          <div class="form-group"><label>Organization</label><input type="text" placeholder="Company name" /></div>
+          <div class="form-group"><label>Tell us about your automation or custom application needs</label><textarea placeholder="Workflow automation, custom apps, HRMS, portals..."></textarea></div>
+          <button type="submit" class="btn-primary" style="width: 100%; justify-content: center; background: var(--primary);"><i class="fas fa-paper-plane"></i> Reach Us</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-brand">
+        <img src="https://www.conacent.com/wp-content/uploads/2018/09/logo.jpg" alt="Conacent" />
+        <p>Enterprise transformation partner helping organizations build intelligent, connected, and scalable operations.</p>
+      </div>
+      <div><h5>Services</h5><ul><li><a href="#">ERP Modernization</a></li><li><a href="#">Procurement</a></li><li><a href="#">Workflow Automation</a></li><li><a href="#">Integration</a></li></ul></div>
+      <div><h5>Industries</h5><ul><li><a href="#">Manufacturing</a></li><li><a href="#">Retail</a></li><li><a href="#">Public sector</a></li><li><a href="#">Telecom</a></li></ul></div>
+      <div><h5>Company</h5><ul><li><a href="#">About</a></li><li><a href="#">Insights</a></li><li><a href="#">Careers</a></li><li><a href="#">Contact</a></li></ul></div>
+      <div class="footer-bottom">© 2026 Conacent. All rights reserved.</div>
+    </div>
+  </footer>
+
+  <script>
+    const toggle = document.getElementById('navToggle');
+    const links = document.getElementById('navLinks');
+    const dropdownButtons = document.querySelectorAll('.dropdown-toggle');
+
+    const closeDropdowns = () => {
+      dropdownButtons.forEach(btn => {
+        btn.setAttribute('aria-expanded', 'false');
+        const menu = btn.nextElementSibling;
+        if (menu) menu.classList.remove('open');
+      });
+    };
+
+    if (toggle && links) {
+      toggle.addEventListener('click', () => {
+        links.classList.toggle('open');
+        closeDropdowns();
+      });
+      links.querySelectorAll('a').forEach(link => link.addEventListener('click', () => {
+        links.classList.remove('open');
+        closeDropdowns();
+      }));
+    }
+
+    dropdownButtons.forEach(button => {
+      button.addEventListener('click', (event) => {
+        event.preventDefault();
+        const menu = button.nextElementSibling;
+        const isOpen = button.getAttribute('aria-expanded') === 'true';
+        closeDropdowns();
+        if (menu && !isOpen) {
+          button.setAttribute('aria-expanded', 'true');
+          menu.classList.add('open');
+        }
+      });
+    });
+
+    document.addEventListener('click', (event) => {
+      if (!event.target.closest('.nav-item.dropdown')) {
+        closeDropdowns();
+      }
+    });
+  </script>
+</body>
+</html>
